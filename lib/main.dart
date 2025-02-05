@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/main_page.dart';
+import 'package:flutter_application_2/default_tab_controller.dart';
+// import 'package:flutter_application_2/main_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,7 +12,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MainPage(),
+      debugShowCheckedModeBanner: false,
+      home: DefaultTabControllerWidget(),
     );
   }
 }
