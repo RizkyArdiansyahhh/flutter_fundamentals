@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/application_color.dart';
+import 'package:flutter_application_2/Models/Money.dart';
+import 'package:flutter_application_2/Models/cart.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -13,58 +14,98 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ChangeNotifierProvider(
-        create: (context) => ApplicationColor(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => Cart()),
+          ChangeNotifierProvider(create: (context) => Money())
+        ],
         child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.black,
-              title: Consumer<ApplicationColor>(
-                builder: (context, applicationColor, _) => Text(
-                  "Provider State Management",
-                  style: TextStyle(color: applicationColor.color()),
-                ),
-              ),
-            ),
-            body: Center(
-                child: Column(
+          appBar: AppBar(
+            title: Text("Multi Provider"),
+          ),
+          body: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Consumer<ApplicationColor>(
-                  builder: (context, applicationColor, _) => AnimatedContainer(
-                    duration: Duration(milliseconds: 500),
-                    width: 100,
-                    height: 100,
-                    color: applicationColor.color(),
-                    margin: EdgeInsets.all(5),
-                  ),
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      margin: EdgeInsets.all(5),
-                      child: Text(
-                        "AB",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
-                      ),
+                    Text(
+                      "Balance : ",
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
-                    Consumer<ApplicationColor>(
-                        builder: (context, applicationColor, _) => Switch(
-                            value: applicationColor.isBlue,
-                            onChanged: (newValue) {
-                              applicationColor.isBlue = newValue;
-                            })),
                     Container(
-                      margin: EdgeInsets.all(5),
-                      child: Text(
-                        "AB",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      width: MediaQuery.of(context).size.width / 2,
+                      height: 40,
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.teal,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.teal.shade100,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Consumer<Money>(
+                          builder: (context, money, _) => Text(
+                            (money.balance.toString()),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.teal),
+                          ),
+                        ),
                       ),
                     )
                   ],
-                )
+                ),
+                Container(
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    height: 50,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Consumer<Cart>(
+                      builder: (context, cart, _) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Apple(500) x ${cart.quantity}",
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            (500 * cart.quantity).toString(),
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ))
               ],
-            ))),
+            ),
+          ),
+          floatingActionButton: Consumer<Money>(
+            builder: (context, money, _) => Consumer<Cart>(
+              builder: (context, cart, _) => FloatingActionButton(
+                onPressed: () {
+                  if (money.balance >= 500) {
+                    money.balance -= 500;
+                    cart.quantity += 1;
+                  }
+                },
+                backgroundColor: Colors.teal,
+                child: Icon(
+                  Icons.add_shopping_cart,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
