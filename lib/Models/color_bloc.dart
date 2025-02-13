@@ -1,39 +1,27 @@
-import 'dart:async';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 enum ColorEvent {
-  toLightBlue,
-  toAmber,
+  toRed,
+  toYellow,
+  toGreen,
 }
 
-class ColorBloc {
-  Color _color = Colors.amber;
+class ColorState {
+  final Color color;
+  ColorState(this.color);
+}
 
-  StreamController<ColorEvent> _eventController =
-      StreamController<ColorEvent>();
-
-  StreamSink<ColorEvent> get eventSink => _eventController.sink;
-
-  StreamController<Color> _stateController = StreamController<Color>();
-  StreamSink<Color> get _stateSink => _stateController.sink;
-  Stream<Color> get stateStream => _stateController.stream;
-
-  void _mapEventToState(ColorEvent colorEvent) {
-    if (colorEvent == ColorEvent.toLightBlue) {
-      _color = Colors.lightBlueAccent;
-    } else {
-      _color = Colors.amber;
-    }
-    _stateSink.add(_color);
-  }
-
-  ColorBloc() {
-    _eventController.stream.listen(_mapEventToState);
-  }
-
-  void dispose() {
-    _eventController.close();
-    _stateController.close();
+class ColorBloc extends Bloc<ColorEvent, ColorState> {
+  ColorBloc() : super(ColorState(Colors.red)) {
+    on<ColorEvent>((event, emit) {
+      if (event == ColorEvent.toRed) {
+        emit(ColorState(Colors.red));
+      } else if (event == ColorEvent.toGreen) {
+        emit(ColorState(Colors.green));
+      } else if (event == ColorEvent.toYellow) {
+        emit(ColorState(Colors.yellow));
+      }
+    });
   }
 }
