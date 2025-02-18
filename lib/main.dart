@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/post_result_model.dart';
+import 'package:flutter_application_2/user_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,6 +15,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   PostResult? postResult;
+  User? user;
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +28,15 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(postResult != null
-                  ? "${postResult?.jsonrpc ?? ''} | ${postResult?.result ?? ''} | ${postResult?.id ?? 0}"
+              Text(user != null
+                  ? "${user?.id ?? ''} | ${user?.name ?? ''}"
                   : "Data Not Found"),
               ElevatedButton(
                 onPressed: () async {
-                  var result = await PostResult.connectToApi(
-                    "2.0",
-                    "apiinfo.version",
-                    {},
-                    1,
-                  );
+                  var result = await User.connectToAPi("2");
 
                   setState(() {
-                    postResult = result;
+                    user = result;
                   });
                 },
                 child: const Text("Post"),
