@@ -1,39 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/second_page.dart';
+import 'package:flutter_application_2/services.dart';
 
-class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+import 'person.dart';
+import 'person_card.dart';
+
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  Person? person;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Hero Animation"),
-        backgroundColor: Colors.cyanAccent,
-      ),
-      body: GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (comtext) => SecondPage()));
-        },
-        child: Hero(
-          tag: "Profil-Picture",
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.cyanAccent,
-              ),
-              child: Image(
-                  image: NetworkImage(
-                      "https://cdn.shopify.com/s/files/1/0720/5919/1615/files/230921_goyounjung_moving_1024x1024.jpg?v=1695329879"),
-                  fit: BoxFit.cover),
-            ),
-          ),
+        appBar: AppBar(
+          title: const Text('Dio Demo'),
         ),
-      ),
-    );
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              person != null
+                  ? PersonCard(person: person!)
+                  : const Text('no data'),
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: 100,
+                child: ElevatedButton(
+                    onPressed: () async {
+                      Person? result = await Services.getById(2);
+
+                      if (result != null) {
+                        setState(() {
+                          person = result;
+                        });
+                      } else {
+                        setState(() {
+                          person = null;
+                        });
+                      }
+                    },
+                    child: const Text('GET')),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: 100,
+                child: ElevatedButton(
+                    onPressed: () async {
+                      Person? result = await Services.createUser(
+                          "Rizky", "ardiansyah", "riski@gmail.com");
+                      if (result != null) {
+                        print("User Created: ${result.name}, ${result.email}");
+                        setState(() {
+                          person = result;
+                        });
+                      } else {
+                        print("Failed to create user");
+                        setState(() {
+                          person = null;
+                        });
+                      }
+                    },
+                    child: const Text('POST')),
+              )
+            ],
+          ),
+        ));
   }
 }
